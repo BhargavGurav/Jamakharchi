@@ -1,0 +1,204 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Expense Tracker </title>
+
+    <!-- favicon setting  -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="shortcut icon" href="{% static 'images/logo.ico' %}">
+
+    <!-- bootstrap5 css cdn  -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- AOS cdn  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" integrity="sha512-1cK78a1o+ht2JcaW6g8OXYwqpev9+6GqOkz9xmBN9iUUhIndKtxwILGWYOSibOKjLsEdjyjZvYDq/cZwNeak0w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- fontawesome cdn  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- custome css  -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        .swal-text{
+            text-align: center;
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    
+    
+    <div class="container-fluid">
+        <div class="row sticky-top ">
+            <!--******************** navbar start  ********************-->
+            <div class="col-12 navbar-col p-3">
+                <span class="fs-1">Expensia</span>
+                <a href="" class="btn btn-outline-dark float-end mt-2 me-2 btn-lg" data-bs-toggle="modal" data-bs-target="#AddEntryModal">Entry</a>
+                
+                <a href="" class="btn btn-outline-info float-end mt-2 btn-lg me-2 " data-bs-toggle="modal" data-bs-target="#download" title="Send range for Statement">Download</a>
+               
+            </div>
+            <!--******************** navbar end  ********************-->
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12 content-div text-center">
+                {% if records|length == 0 %}
+                    <p class="fs-1 text-warning">No records yet !</p>
+                {% else %}
+                <table class="table table-dark table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Purpose</th>
+                            <th>Closing Balance</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {% for record in records %}
+                        <tr>
+                            <td>{{record.date}}</td>
+                            <td>₹ {{record.amount}}</td>
+                            <td>{{record.purpose}}</td>
+                            <td>₹ {{record.closing}}</td>
+                            <td class="text-center"><a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteEntry{{record.pk}}"> <i class="fa-solid fa-trash-can fa-flip"></i></a></td>
+
+                            <!-- delete entry modal start  -->
+                            <div class="modal text-dark" id="deleteEntry{{record.pk}}">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <span class="fs-1 modal-title">Delete Entry</span>
+                                            <button class="btn btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body text-center text-bold">
+                                            <span class="fs-1">Are you sure?</span>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a class="btn btn-danger" href="/delete/{{record.pk}}">YES</a>
+                                            <button class="btn btn-secondary" data-bs-dismiss="modal">NO</button>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </tr>
+                    {% endfor %}
+                </table>
+                
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Bootstrap5  -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- AOS cdn  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js" integrity="sha512-A7AYk1fGKX6S2SsHywmPkrnzTZHrgiVT7GcQkLGDe2ev0aWb8zejytzS8wjo7PGEXKqJOrjQ4oORtnimIRZBtw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- fontawesome cdn  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        AOS.init();
+    </script>
+
+    <!--******************************* Add Entry Modal start  *******************************-->
+    <div class="modal" id="AddEntryModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fas fa-plus fs-4"></i>&nbsp;&nbsp;<span class="text-bold modal-title fs-4">Add Entry</span>
+                    <button class="btn btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="form-group mt-3">
+                            <input type="date" name="date" id="" placeholder="{% now 'd-m-Y' %}" class="form-control">
+                        </div>
+                        <div class="form-group mt-3">
+                            <input type="number" name="amount" id="" class="form-control" placeholder="Amount...">
+                        </div>
+                        <div class="form-group mt-3">
+                            <input type="text" name="purpose" id="" class="form-control" placeholder="Purpose...">
+                        </div>
+                        <div class="form-group mt-3">
+                            <input type="number" name="closing_amount" id="" class="form-control" placeholder="Closing balance...">
+                        </div>
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-success">SAVE</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--******************************* Add Entry Modal end  *******************************-->
+
+     <!--******************************* Download Modal start  *******************************-->
+     <div class="modal" id="download">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="fa-solid fa-circle-down fa-bounce"></i>&nbsp;&nbsp;<span class="text-bold modal-title fs-4">Download Statement</span>
+                    <button class="btn btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/download" method="post">
+                        {% csrf_token %}
+                        <div class="form-group mt-3">
+                            <label for="">Start date</label>
+                            <input type="date" name="start-date" id=""  class="form-control">
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="">End date</label>
+                            <input type="date" name="end-date" id="" class="form-control">
+                        </div>
+                        
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-success">GET FILE</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--******************************* Add Entry Modal end  *******************************-->
+    
+
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+            <script>
+                var m1 = '{{message}}';
+                swal('', m1, 'success');
+            </script>
+        {% else %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+
+            <script>
+                var m2 = '{{message}}';
+                swal('', m2, 'error');
+            </script>
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
